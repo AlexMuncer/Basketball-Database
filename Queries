@@ -1,0 +1,33 @@
+--To find out what each player got paid per game one could use an aggregated join query (query 1). This works because all the “Minutes Played” and “Wage Per Minute in USD$” will be the same no matter how many sponsors the player had for a game. Essentially one could use  either the MAX or MIN clause and it would return the same result.
+
+--Query 1
+SELECT g.game_number AS "Game Number", p.Player_first_name || ', ' || p.Player_last_name AS "Name", MAX(p.Wage_per_minute_in_USD$*g.minutes_played) AS "Total Wage In USD$" 
+FROM player_details p JOIN game_facts g ON (p.player_ID = g.player_ID) 
+GROUP BY g.game_number, p.Player_first_name || ', ' || p.Player_last_name 
+ORDER BY g.game_number;
+
+--Alternatively, one could get the same result without aggregation and using a DISTINCT clause (query 2). 
+
+--Query 2
+SELECT DISTINCT g.game_number AS "Game Number", p.Player_first_name || ', ' || p.Player_last_name AS "Name", p.Wage_per_minute_in_USD$*g.minutes_played AS "Total Wage In USD$" 
+FROM player_details p JOIN game_facts g ON (p.player_ID = g.player_ID) 
+ORDER BY g.game_number;
+
+--Possibly a more interesting aggregated join query is finding all players highest ever paid game (query 3).
+
+--Query 3
+SELECT p.Player_first_name || ', ' || p.Player_last_name AS "Name", MAX(p.Wage_per_minute_in_USD$*g.minutes_played) AS "Highest Ever Paid Game In USD$"
+FROM player_details p JOIN game_facts g ON (p.player_ID = g.player_ID)
+GROUP BY p.Player_first_name || ', ' || p.Player_last_name
+ORDER BY MAX(p.Wage_per_minute_in_USD$*g.minutes_played) DESC;
+
+--Query 4 is a nested select query  that determines the average pay players received in each game.
+
+--Query 4
+SELECT "Game Number", AVG("Total Wage In USD$") AS "Average Total Pay In USD$"
+FROM
+(SELECT DISTINCT g.game_number AS "Game Number", p.Wage_per_minute_in_USD$*g.minutes_played AS "Total Wage In USD$" 
+FROM player_details p JOIN game_facts g ON (p.player_ID = g.player_ID) 
+ORDER BY g.game_number)
+GROUP BY "Game Number"
+ORDER BY "Game Number";
