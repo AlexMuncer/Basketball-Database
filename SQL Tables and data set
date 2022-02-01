@@ -1,0 +1,88 @@
+CREATE TABLE Sponsor_Details (
+  Sponsor VARCHAR2(50 CHAR),
+  Sponsor_Email VARCHAR2(70 CHAR) NOT NULL UNIQUE,
+  CONSTRAINT Sponsor_PK PRIMARY KEY (Sponsor)
+);
+
+CREATE TABLE Home_Venue (
+  Venue_ID NUMBER(9),
+  Venue_Name VARCHAR2(50 CHAR) NOT NULL,
+  Venue_Capacity NUMBER(8,-2) NOT NULL CHECK (Venue_Capacity > 0),
+  CONSTRAINT Home_Venue_PK PRIMARY KEY (Venue_ID)
+);
+
+CREATE TABLE Team_Details (
+  Team_Name VARCHAR2(50 CHAR),
+  Team_Email VARCHAR2(70 CHAR) NOT NULL UNIQUE,
+  Venue_ID NUMBER(9) NOT NULL UNIQUE,
+  CONSTRAINT Team_details_PK PRIMARY KEY (Team_Name),
+  CONSTRAINT Home_Venue_FK FOREIGN KEY (Venue_ID) REFERENCES Home_Venue (Venue_ID)
+);
+
+
+CREATE TABLE Player_Details (
+  Player_ID NUMBER(9),
+  Player_First_Name VARCHAR2(50 CHAR) NOT NULL,
+  Player_Last_Name VARCHAR2(50 CHAR) NOT NULL,
+  Player_Email VARCHAR2(70 CHAR) NOT NULL UNIQUE,
+  Wage_Per_Minute_In_USD$ NUMBER(9,2) CHECK (Wage_Per_Minute_In_USD$ >=0),
+  Team_Name VARCHAR2(50 CHAR) NOT NULL,
+  CONSTRAINT Player_Details_PK PRIMARY KEY (Player_ID),
+  CONSTRAINT Team_Name_FK FOREIGN KEY (Team_Name) REFERENCES Team_Details (Team_Name)
+
+);
+
+
+CREATE TABLE Game_Facts (
+  Game_Number NUMBER(9) NOT NULL,
+  Sponsor REFERENCES Sponsor_Details (Sponsor) NOT NULL,
+  Player_ID REFERENCES Player_Details (Player_ID) NOT NULL,
+  Minutes_Played NUMBER(4,2) NOT NULL CHECK (Minutes_played >= 0),
+  CONSTRAINT Game_Facts_PK PRIMARY KEY (Game_Number, Sponsor, Player_ID)
+);
+
+INSERT INTO sponsor_details VALUES ('Joma', 'Joma@Sponser.com');
+INSERT INTO sponsor_details VALUES ('Adidas', 'BBallSponser@adidas.com');
+INSERT INTO sponsor_details VALUES ('Nike', 'Sponser@nike.com');
+INSERT INTO sponsor_details VALUES ('Reebok', 'RB@sponsers.com');
+INSERT INTO sponsor_details VALUES ('Puma', 'Sponser@puma.com');
+INSERT INTO sponsor_details VALUES ('New Balance', 'NB@sponser.com');
+INSERT INTO sponsor_details VALUES ('Champion', 'Champ@sponser.com');
+
+INSERT INTO home_venue VALUES (1, 'LA Arena', 35000);
+INSERT INTO home_venue VALUES (2, 'Net Hall', 40000);
+INSERT INTO home_venue VALUES (3, 'Raptor Towers', 70000);
+INSERT INTO home_venue VALUES (4, 'Oracal Arena', 20000);
+
+INSERT INTO team_details VALUES ('Lakers', 'Staff@Lakers.com', 1);
+INSERT INTO team_details VALUES ('Brooklyn', 'Pay@Brooklyn.com', 2);
+INSERT INTO team_details VALUES ('Raptors', 'Pay@TorontoRaptors.com', 3);
+INSERT INTO team_details VALUES ('Golden State Warriors', 'Pay@GSW.com', 4);
+
+INSERT INTO Player_Details VALUES (1, 'Lebron', 'James', 'Bron@gmail.com', 40.00, 'Lakers');
+INSERT INTO Player_Details VALUES (2, 'kevin', 'Durrant', 'KD@gmail.com', 79.00, 'Brooklyn');
+INSERT INTO Player_Details VALUES (3, 'James', 'Harden', 'Harden@hotmail.com', 25.78, 'Brooklyn');
+INSERT INTO Player_Details VALUES (4, 'Steph', 'Curry', 'Curry.S@hotmail.com', 35.11, 'Golden State Warriors');
+INSERT INTO Player_Details VALUES (5, 'Kyrie', 'Irving', 'K.Irving@gmail.com', 32.88, 'Raptors');
+
+INSERT INTO game_facts VALUES (1, 'Joma', 1, 32.00);
+INSERT INTO game_facts VALUES (1, 'Nike', 1, 32.00);
+INSERT INTO game_facts VALUES (1, 'Adidas', 1, 32.00);
+INSERT INTO game_facts VALUES (1, 'Reebok', 2, 23.00);
+INSERT INTO game_facts VALUES (1, 'Puma', 3, 16.00);
+INSERT INTO game_facts VALUES (1, 'New Balance', 3, 16.00);
+INSERT INTO game_facts VALUES (2, 'Puma', 4, 35.00);
+INSERT INTO game_facts VALUES (2, 'New Balance', 4, 35.00);
+INSERT INTO game_facts VALUES (2, 'New Balance', 5, 34.00);
+INSERT INTO game_facts VALUES (2, 'Joma', 5, 34.00);
+INSERT INTO game_facts VALUES (3, 'Nike', 1, 20.00);
+INSERT INTO game_facts VALUES (3, 'Adidas', 1, 20.00);
+INSERT INTO game_facts VALUES (3, 'Reebok', 1, 20.00);
+INSERT INTO game_facts VALUES (3, 'Nike', 2, 34.00);
+INSERT INTO game_facts VALUES (3, 'Puma', 3, 37.00);
+INSERT INTO game_facts VALUES (3, 'New Balance', 3, 37.00);
+INSERT INTO game_facts VALUES (4, 'New Balance', 4, 22.00);
+INSERT INTO game_facts VALUES (4, 'Joma', 4, 22.00);
+INSERT INTO game_facts VALUES (4, 'New Balance', 5, 25.00);
+INSERT INTO game_facts VALUES (4, 'Champion', 5, 25.00);
+
